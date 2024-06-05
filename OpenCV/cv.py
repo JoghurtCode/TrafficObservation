@@ -6,9 +6,9 @@ def main():
     backSub = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
 
     car_count = 0
-    min_contour_width = 30  # Reduced minimum width for smaller cars
-    min_contour_height = 30  # Reduced minimum height for smaller cars
-    min_contour_area = 400   # Reduced minimum area for smaller cars
+    min_contour_width = 20 
+    min_contour_height = 20  
+    min_contour_area = 300   
     max_contour_area = 50000
 
     counting_line_position = 550
@@ -34,14 +34,18 @@ def main():
             if min_contour_area < cv2.contourArea(contour) < max_contour_area and 0.2 < aspect_ratio < 4.0:
                 if w >= min_contour_width and h >= min_contour_height:
                     color = (0, 255, 0)
+                    label = "Counted"
                     if (y + h) > (counting_line_position - offset) and (y + h) < (counting_line_position + offset):
                         car_count += 1
                 else:
                     color = (0, 0, 255)
+                    label = "Too Small"
             else:
                 color = (0, 0, 255)
+                label = "Not Car"
 
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+            cv2.putText(frame, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2, cv2.LINE_AA)
 
         cv2.line(frame, (0, counting_line_position), (frame.shape[1], counting_line_position), (255, 0, 0), 2)
         cv2.putText(frame, f'Car Count: {car_count}', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
