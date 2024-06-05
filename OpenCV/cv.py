@@ -29,6 +29,8 @@ def main():
 
         contours, _ = cv2.findContours(morph_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+        current_frame_contours = []
+
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
             aspect_ratio = w / float(h)
@@ -36,12 +38,13 @@ def main():
                 if w >= min_contour_width and h >= min_contour_height:
                     color = (0, 255, 0)
                     label = "Counted"
-                    car_count += 1
                     
-                    # if (counting_line_position - offset) < y + h < (counting_line_position + offset):
-                    #     if contour not in counted_contours:
-                    #         car_count += 1
-                    #         counted_contours.append(contour)
+                    current_frame_contours.append(contour)
+                    
+                    if (counting_line_position - offset) < y + h < (counting_line_position + offset):
+                        if not any(cv2.matchShapes(contour, prev_contour, 1, 0.0) < 0.15 for prev_contour in counted_contours):
+                            car_count += 1
+                            counted_contours.append(contour)
                 else:
                     color = (0, 0, 255)
                     label = "Too Small"
@@ -55,7 +58,6 @@ def main():
         cv2.line(frame, (0, counting_line_position), (frame.shape[1], counting_line_position), (255, 0, 0), 2)
         cv2.putText(frame, f'Car Count: {car_count}', (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 2, cv2.LINE_AA)
         
-        # Display the different masks
         cv2.imshow('Original Frame', frame)
         cv2.imshow('Foreground Mask', fg_mask)
         cv2.imshow('Thresholded Mask', thresh_mask)
