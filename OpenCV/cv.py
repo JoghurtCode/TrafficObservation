@@ -27,7 +27,9 @@ def main():
         morph_mask = cv2.morphologyEx(thresh_mask, cv2.MORPH_OPEN, kernel, iterations=3)
         morph_mask = cv2.morphologyEx(morph_mask, cv2.MORPH_CLOSE, kernel, iterations=3)
 
-        contours, _ = cv2.findContours(thresh_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(morph_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        current_frame_contours = []
 
         for contour in contours:
             x, y, w, h = cv2.boundingRect(contour)
@@ -36,6 +38,8 @@ def main():
                 if w >= min_contour_width and h >= min_contour_height:
                     color = (0, 255, 0)
                     label = "Counted"
+                    
+                    current_frame_contours.append(contour)
                     
                     if (counting_line_position - offset) < y + h < (counting_line_position + offset):
                         if not any(cv2.matchShapes(contour, prev_contour, 1, 0.0) < 0.15 for prev_contour in counted_contours):
