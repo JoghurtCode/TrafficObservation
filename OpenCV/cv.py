@@ -36,11 +36,12 @@ def main():
                 if w >= min_contour_width and h >= min_contour_height:
                     color = (0, 255, 0)
                     label = "Counted"
+                    car_count += 1
                     
-                    if (counting_line_position - offset) < y + h < (counting_line_position + offset):
-                        if contour not in counted_contours:
-                            car_count += 1
-                            counted_contours.append(contour)
+                    # if (counting_line_position - offset) < y + h < (counting_line_position + offset):
+                    #     if contour not in counted_contours:
+                    #         car_count += 1
+                    #         counted_contours.append(contour)
                 else:
                     color = (0, 0, 255)
                     label = "Too Small"
