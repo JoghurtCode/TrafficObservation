@@ -6,15 +6,16 @@ def main():
     backSub = cv2.createBackgroundSubtractorMOG2(detectShadows=True)
 
     car_count = 0
-    min_contour_width = 20 
-    min_contour_height = 20  
-    min_contour_area = 300   
+    min_contour_width = 20
+    min_contour_height = 20 
+    min_contour_area = 300  
     max_contour_area = 50000
 
     counting_line_position = 550
     offset = 10
 
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    counted_contours = []
 
     while True:
         ret, frame = cap.read()
@@ -35,8 +36,11 @@ def main():
                 if w >= min_contour_width and h >= min_contour_height:
                     color = (0, 255, 0)
                     label = "Counted"
-                    if (y + h) > (counting_line_position - offset) and (y + h) < (counting_line_position + offset):
-                        car_count += 1
+                    
+                    if (counting_line_position - offset) < y + h < (counting_line_position + offset):
+                        if contour not in counted_contours:
+                            car_count += 1
+                            counted_contours.append(contour)
                 else:
                     color = (0, 0, 255)
                     label = "Too Small"
